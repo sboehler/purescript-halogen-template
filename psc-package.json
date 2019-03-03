@@ -7,6 +7,8 @@
     "halogen",
     "console",
     "effect",
-    "random"
+    "random",
+    "halogen-css",
+    "css"
   ]
 }
