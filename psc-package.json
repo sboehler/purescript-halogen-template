@@ -6,6 +6,7 @@
     "prelude",
     "halogen",
     "console",
-    "effect"
+    "effect",
+    "random"
   ]
 }

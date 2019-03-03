@@ -7,12 +7,14 @@ import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
+import Effect.Aff(Aff)
+import Effect.Random(random)
 
-data Query a = ToggleState a
+data Query a = GetNumber a
 
-type State = { on :: Boolean }
+type State = { n :: Number }
 
-component :: forall m. H.Component HH.HTML Query Unit Void m
+component :: H.Component HH.HTML Query Unit Void Aff
 component =
   H.component
     { initialState: const initialState
@@ -23,26 +25,26 @@ component =
   where
 
   initialState :: State
-  initialState = { on: false }
+  initialState = { n: 10.0 }
 
   render :: State -> H.ComponentHTML Query
   render state =
     HH.div_
       [ HH.h1_
-          [ HH.text "Hello world!" ]
+          [ HH.text "Generate random numbers" ]
       , HH.p_
           [ HH.text "Why not toggle this button:" ]
       , HH.button
-          [ HE.onClick (HE.input_ ToggleState) ]
-          [ HH.text
-              if not state.on
-              then "Don't push me"
-              else "I said don't push me!"
-          ]
+          [ HE.onClick (HE.input_ GetNumber) ]
+          [ HH.text "Generate a new number"]
+      , HH.div_
+        [HH.text $ "The number is " <> show state]
+
       ]
 
-  eval :: Query ~> H.ComponentDSL State Query Void m
+  eval :: Query ~> H.ComponentDSL State Query Void Aff
   eval = case _ of
-    ToggleState next -> do
-      _ <- H.modify (\state -> { on: not state.on })
+    GetNumber next -> do
+      n' <- H.liftEffect random
+      _ <- H.modify  \s -> s { n = n' }
       pure next
